@@ -1,0 +1,82 @@
+{% assign products = section.settings.collection.products %}
+{% assign heading = section.settings.heading %}
+{% assign excluded_product_ids = cart.items | map: 'product_id' %}
+
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<h1 class="heading">{{ heading }}</h1>
+<div class="wrapper">
+  {% for item in products %}
+    {% unless excluded_product_ids contains item.id %}
+      <div class="item" data-id="{{item.variants[0].id}}">
+        <img class="item_image" src="{{item.featured_image | img_url: '520x'}}" />
+        <p class="item_description">{{ item.title }}</p>
+        <div class="item_info__wrapper">
+          <div class="item_info__multiple__items-toggle">
+            <input type="checkbox" class="items-toggle">
+          </div>
+          <div class="item_info__just_once">Just once</div>
+          {% if item.compare_at_price and item.compare_at_price > 0 %}
+            <div class="item_info__discount">{{ item.compare_at_price | minus: item.price | times: 100.0 | divided_by: item.compare_at_price | abs }}%</div>
+          {% endif %}
+        </div>
+        <button
+          price="{{item.price | money }}"
+          class="add_to_card_btn"
+          type="button">Add to card - {{ item.price | money }}</button>
+      </div>
+    {% endunless %}
+  {% endfor %}
+
+  {% if excluded_product_ids.size == products.size %}
+    {% for item in products %}
+      <div class="item" data-id="{{item.variants[0].id}}">
+        <img class="item_image" src="{{item.featured_image | img_url: '520x'}}" />
+        <p class="item_description">{{ item.title }}</p>
+        <div class="item_info__wrapper">
+          <div class="item_info__multiple__items-toggle">
+            <input type="checkbox" class="items-toggle">
+          </div>
+          <div class="item_info__just_once">Just once</div>
+          {% if item.compare_at_price and item.compare_at_price > 0 %}
+            <div class="item_info__discount">{{ item.compare_at_price | minus: item.price | times: 100.0 | divided_by: item.compare_at_price | abs }}%</div>
+          {% endif %}
+        </div>
+        <button
+          price="{{item.price | money }}"
+          class="add_to_card_btn"
+          type="button">Add to card - {{ item.price | money }}</button>
+      </div>
+    {% endfor %}
+    <p>All products are already in the cart</p>
+  {% endif %}
+</div>
+<script>
+  console.log({{products | json}})
+  console.log({{section.settings | json}})
+  console.log({{itemsInCart | json}})
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+{{ 'custom.css' | asset_url | stylesheet_tag }}
+{{ 'custom.js' | asset_url | script_tag }}
+{% schema %}
+  {
+    "name": "Kolia pages",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading"
+      }, {
+        "type": "collection",
+        "id": "collection",
+        "label": "Collection"
+      }
+    ],
+    "presets": [
+      {
+        "name": "kolia-product",
+        "blocks": []
+      }
+    ]
+  }
+{% endschema %}
